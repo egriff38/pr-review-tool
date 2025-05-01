@@ -1,6 +1,6 @@
 {
   "name": "@egriff38/pr-review-tool",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "A tool to check out GitHub PRs and open them in your editor with session timing",
   "main": "dist/main.js",

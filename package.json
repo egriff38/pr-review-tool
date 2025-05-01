@@ -1,31 +1,41 @@
 {
-  "name": "pr-review",
-  "version": "1.0.0",
+  "name": "@egriff38/pr-review-tool",
+  "version": "0.1.0",
   "type": "module",
-  "description": "",
-  "main": "index.js",
+  "description": "A tool to check out GitHub PRs and open them in your editor with session timing",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
   "bin": {
-    "pr-review": "./exec.sh"
+    "pr-review": "./dist/main.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "github",
+    "pr",
+    "review",
+    "cli",
+    "tool"
+  ],
+  "author": "egriff38",
   "license": "ISC",
   "packageManager": "pnpm@10.6.2",
   "dependencies": {
     "commander": "^13.1.0",
-    "open": "^10.1.1",
-    "tsx": "^4.19.4",
-    "typescript": "^5.8.3"
+    "open": "^10.1.1"
   },
   "devDependencies": {
-    "@types/node": "^22.15.3"
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

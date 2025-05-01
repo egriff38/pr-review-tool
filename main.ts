@@ -223,12 +223,12 @@ function startSessionTimer(prUrl: string, duration: number): void {
   try {
     // Format the URL for the session timer
     const sessionIntent = `Review ${prUrl}`;
-    const sessionCategory = "PR Review";
+    const sessionCategory = "PR-Review";
     const sessionNotes = `PR Review for ${prUrl}`;
 
     const sessionUrl = `session:///start?intent=${encodeURIComponent(
       sessionIntent
-    )}&duration=${duration}&category=${encodeURIComponent(
+    )}&duration=${duration}&categoryName=${encodeURIComponent(
       sessionCategory
     )}&notes=${encodeURIComponent(sessionNotes)}`;
 

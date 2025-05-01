@@ -23,6 +23,34 @@ pr-review https://github.com/owner/repo/pull/123
 
 # With options
 pr-review https://github.com/owner/repo/pull/123 --verbose --new-editor --duration 30
+
+# Initialize configuration
+pr-review init
+```
+
+### Available Commands
+
+```bash
+$ pr-review --help
+Usage: pr-review [options] [command] <pr-url>
+
+Tool to check out GitHub PRs and open them in your editor
+
+Arguments:
+  pr-url                    GitHub PR URL
+
+Options:
+  --no-editor               Do not open the editor
+  --new-editor              Open in a new editor window
+  --reuse-editor            Reuse existing editor window
+  -d, --duration <minutes>  Specify session duration in minutes
+  --no-session              Do not start a session timer
+  -v, --verbose             Enable verbose output
+  -h, --help                display help for command
+
+Commands:
+  which-config              Show the location of the config file
+  init [options]            Generate an initial configuration file
 ```
 
 ### Options
@@ -51,7 +79,17 @@ To use this feature:
 
 ## Configuration
 
-Create a `~/.prreviewrc` file to customize the tool's behavior:
+The tool uses a configuration file at `~/.pr-review-tool.config.json`. You can generate an initial configuration file using:
+
+```bash
+# Interactive mode - will prompt for configuration
+pr-review init
+
+# Quick mode - uses default values
+pr-review init --default
+```
+
+The configuration file supports the following options:
 
 ```json
 {

@@ -26,6 +26,9 @@ pr-review https://github.com/owner/repo/pull/123 --verbose --new-editor --durati
 
 # Initialize configuration
 pr-review init
+
+# Check version
+pr-review --version
 ```
 
 ### Available Commands
@@ -40,12 +43,13 @@ Arguments:
   pr-url                    GitHub PR URL
 
 Options:
+  -v, --version             display version number
   --no-editor               Do not open the editor
   --new-editor              Open in a new editor window
   --reuse-editor            Reuse existing editor window
   -d, --duration <minutes>  Specify session duration in minutes
   --no-session              Do not start a session timer
-  -v, --verbose             Enable verbose output
+  -V, --verbose             Enable verbose output
   -h, --help                display help for command
 
 Commands:
@@ -55,12 +59,13 @@ Commands:
 
 ### Options
 
+- `-v, --version`: Display the current version number
 - `--no-editor`: Don't open the editor after checkout
 - `--new-editor`: Open in a new editor window
 - `--reuse-editor`: Reuse existing editor window
 - `-d, --duration <minutes>`: Set session duration in minutes
 - `--no-session`: Don't start a session timer
-- `-v, --verbose`: Enable verbose output for debugging
+- `-V, --verbose`: Enable verbose output for debugging
 
 ## Session Timer Integration
 

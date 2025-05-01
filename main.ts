@@ -9,6 +9,13 @@ import os from "os";
 import { URL } from "url";
 import open from "open";
 
+// Read version from package.json
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const packageJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")
+);
+const VERSION = packageJson.version;
+
 const CONFIG_FILE_NAME = ".pr-review-tool.config.json";
 // Helper function to expand ~ to home directory
 function expandHomeDir(path: string): string {
@@ -332,6 +339,7 @@ async function main(prUrl: string, options: any): Promise<void> {
 program
   .name("pr-review")
   .description("Tool to check out GitHub PRs and open them in your editor")
+  .version(VERSION, "-v, --version")
   .argument("<pr-url>", "GitHub PR URL")
   .option("--no-editor", "Do not open the editor")
   .option("--new-editor", "Open in a new editor window")
@@ -342,7 +350,7 @@ program
     parseInt
   )
   .option("--no-session", "Do not start a session timer")
-  .option("-v, --verbose", "Enable verbose output")
+  .option("-V, --verbose", "Enable verbose output")
   .action(main);
 
 // Add which-config subcommand

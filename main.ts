@@ -4,11 +4,12 @@ import { program, Option } from "commander";
 import fs from "fs";
 import path from "path";
 import { execSync, exec } from "child_process";
-import readline from "readline";
+import readline from "readline/promises";
 import os from "os";
 import { URL } from "url";
 import open from "open";
 
+const CONFIG_FILE_NAME = ".pr-review-tool.config.json";
 // Helper function to expand ~ to home directory
 function expandHomeDir(path: string): string {
   return path.replace(/^~(?=$|\/|\\)/, os.homedir());
@@ -27,7 +28,7 @@ function readConfig(): Config {
     defaultSessionDuration: 25, // Default pomodoro session duration in minutes
   };
 
-  const configPath = path.join(os.homedir(), ".prreviewrc");
+  const configPath = path.join(os.homedir(), CONFIG_FILE_NAME);
 
   try {
     if (fs.existsSync(configPath)) {
@@ -192,18 +193,14 @@ function checkoutPR(repoPath: string, prNumber: string): boolean {
 }
 
 // Ask the user if they want to open the editor
-function promptOpenEditor(): Promise<string> {
+async function promptOpenEditor(): Promise<string> {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
-
-  return new Promise((resolve) => {
-    rl.question("Open in editor? [Y]es/[n]o/new [w]indow: ", (answer) => {
-      rl.close();
-      resolve(answer.toLowerCase());
-    });
-  });
+  const answer = await rl.question("Open in editor? [Y]es/[n]o/new [w]indow: ");
+  rl.close();
+  return answer.toLowerCase();
 }
 
 // Open the repository in VSCode
@@ -277,7 +274,9 @@ async function main(prUrl: string, options: any): Promise<void> {
     console.error(
       `Could not find a local repository for ${owner}/${repo} in configured search directories.`
     );
-    console.log("You can configure search directories in ~/.prreviewrc");
+    console.log(
+      `You can configure search directories in ${CONFIG_FILE_NAME} in your home directory`
+    );
     process.exit(1);
   }
 
@@ -351,8 +350,78 @@ program
   .command("which-config")
   .description("Show the location of the config file")
   .action(() => {
-    const configPath = path.join(os.homedir(), ".prreviewrc");
+    const configPath = path.join(os.homedir(), CONFIG_FILE_NAME);
     console.log(configPath);
+  });
+
+// Add init subcommand
+program
+  .command("init")
+  .description("Generate an initial configuration file")
+  .option("-d, --default", "Use default values without prompting")
+  .action(async (options) => {
+    const configPath = path.join(os.homedir(), CONFIG_FILE_NAME);
+
+    // Check if config already exists
+    if (fs.existsSync(configPath)) {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      const answer = await rl.question(
+        "Configuration file already exists. Overwrite? [y/N]: "
+      );
+      rl.close();
+
+      if (answer !== "y" && answer !== "yes") {
+        console.log("Operation cancelled.");
+        process.exit(0);
+      }
+    }
+
+    const defaultConfig: Config = {
+      searchDirs: [process.cwd()],
+      defaultSessionDuration: 25,
+    };
+
+    let config: Config = defaultConfig;
+
+    if (!options.default) {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+      // Prompt for search directories
+      const dirsAnswer = await rl.question(
+        `Enter search directories (comma-separated, default: ${process.cwd()}): `
+      );
+
+      if (dirsAnswer) {
+        config.searchDirs = dirsAnswer.split(",").map((dir) => dir.trim());
+      }
+
+      // Prompt for session duration
+      const durationAnswer = await rl.question(
+        `Enter default session duration in minutes (default: 25): `
+      );
+      rl.close();
+
+      if (durationAnswer) {
+        const duration = parseInt(durationAnswer);
+        if (!isNaN(duration) && duration > 0) {
+          config.defaultSessionDuration = duration;
+        }
+      }
+    }
+
+    try {
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+      console.log(`Configuration file created at: ${configPath}`);
+    } catch (error) {
+      console.error("Failed to create configuration file:", error);
+      process.exit(1);
+    }
   });
 
 program.parse(process.argv);

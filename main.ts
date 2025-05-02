@@ -246,8 +246,29 @@ function startSessionTimer(prUrl: string, duration: number): void {
   }
 }
 
+// Get current PR URL using GitHub CLI
+function getCurrentPRUrl(): string | undefined {
+  try {
+    const output = execSync('gh pr status --json url -q ".currentBranch.url"', {
+      encoding: "utf8",
+    }).trim();
+    return output || undefined;
+  } catch (error) {
+    return undefined;
+  }
+}
+
 // Main function
-async function main(prUrl: string, options: any): Promise<void> {
+async function main(prUrl: string | undefined, options: any): Promise<void> {
+  // If no PR URL provided, try to get current branch PR
+  if (!prUrl) {
+    prUrl = getCurrentPRUrl();
+    if (!prUrl) {
+      console.error("No PR URL provided and no current branch PR found.");
+      process.exit(1);
+    }
+  }
+
   // Validate GitHub URL
   const prInfo = parseGitHubUrl(prUrl);
   if (!prInfo) {
@@ -340,7 +361,10 @@ program
   .name("pr-review")
   .description("Tool to check out GitHub PRs and open them in your editor")
   .version(VERSION, "-v, --version")
-  .argument("<pr-url>", "GitHub PR URL")
+  .argument(
+    "[pr-url]",
+    "GitHub PR URL (optional, defaults to current branch PR)"
+  )
   .option("--no-editor", "Do not open the editor")
   .option("--new-editor", "Open in a new editor window")
   .option("--reuse-editor", "Reuse existing editor window")

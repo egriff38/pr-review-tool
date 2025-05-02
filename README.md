@@ -18,11 +18,16 @@ pnpm add -g pr-review
 ## Usage
 
 ```bash
-# Basic usage
+# Basic usage with PR URL
 pr-review https://github.com/owner/repo/pull/123
+
+# Basic usage with current branch PR
+pr-review
 
 # With options
 pr-review https://github.com/owner/repo/pull/123 --verbose --new-editor --duration 30
+# Or with current branch PR
+pr-review --verbose --new-editor --duration 30
 
 # Initialize configuration
 pr-review init
@@ -35,12 +40,12 @@ pr-review --version
 
 ```bash
 $ pr-review --help
-Usage: pr-review [options] [command] <pr-url>
+Usage: pr-review [options] [command] [pr-url]
 
 Tool to check out GitHub PRs and open them in your editor
 
 Arguments:
-  pr-url                    GitHub PR URL
+  pr-url                    GitHub PR URL (optional, defaults to current branch PR)
 
 Options:
   -v, --version             display version number
